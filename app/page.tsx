@@ -24,8 +24,9 @@ export default function Home() {
       const initDataUnsafe = tg.initDataUnsafe || {};
 
       if (initDataUnsafe.user) {
-        // استرداد رابط الإحالة
-        const referrer = document.referrer || null;
+        // استخراج معلمة start من رابط التطبيق
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrer = urlParams.get('start') || null;
 
         // إرسال بيانات المستخدم إلى الخادم مع رابط الإحالة
         fetch('/api/user', {
@@ -35,7 +36,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             ...initDataUnsafe.user,
-            referrer, // إضافة رابط الإحالة
+            referrer, // إرسال رابط الإحالة المستخرج
           }),
         })
           .then((res) => res.json())
@@ -119,4 +120,3 @@ export default function Home() {
     </div>
   );
 }
-
