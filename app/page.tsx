@@ -1,4 +1,5 @@
 'use client';
+
 import BottomNavigation from '@/components/BottomNavigation';
 import { useState, useEffect } from 'react';
 
@@ -9,13 +10,24 @@ interface Task {
   completed: boolean;
 }
 
-const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string }) => {
-  const [taskList, setTaskList] = useState<Task[]>(tasks);
+const TasksPage = () => {
+  const [taskList, setTaskList] = useState<Task[]>([]);
+  const [telegramId, setTelegramId] = useState<string>('');
 
   useEffect(() => {
-    // تحميل المهام المكتملة من localStorage
-    const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
-    setTaskList(prevTasks => prevTasks.filter(task => !completedTasks.includes(task.id)));
+    // جلب البيانات من API أو مصدر خارجي
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/tasks'); // استبدل هذا بـ API المناسب لجلب البيانات
+        const data = await response.json();
+        setTaskList(data.tasks || []);
+        setTelegramId(data.telegramId || '');
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchData();
 
     // التحقق من رابط الإحالة
     const referrer = document.referrer;
@@ -31,7 +43,7 @@ const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string })
         body: JSON.stringify({ telegramId, referrer }),
       }).catch(err => console.error('Failed to log referrer:', err));
     }
-  }, []);
+  }, [telegramId]);
 
   const handleTaskClick = async (taskId: number) => {
     try {
