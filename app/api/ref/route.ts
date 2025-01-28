@@ -3,7 +3,13 @@ import { prisma } from '@/lib/prisma'; // تأكد من أن هذا هو الم�
 
 export async function GET(request: Request) {
   try {
-    const { userId } = request.url.split('?userId=')[1]; // افتراضًا الحصول على userId من الاستعلام
+    // الحصول على userId من الاستعلام باستخدام URLSearchParams
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json({ message: 'UserId is required' }, { status: 400 });
+    }
 
     // البحث عن المستخدم باستخدام userId
     const user = await prisma.user.findUnique({
@@ -46,4 +52,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 });
   }
 }
-
