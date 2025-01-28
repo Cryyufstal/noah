@@ -1,26 +1,53 @@
-import { getReferrals, getReferrer, saveReferral } from '@/lib/storage';
-import { NextRequest, NextResponse } from 'next/server';
+// /app/api/referrals/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-export async function POST(request: NextRequest) {
-  const { userId, referrerId } = await request.json();
-  
-  if (!userId || !referrerId) {
-    return NextResponse.json({ error: 'Missing userId or referrerId' }, { status: 400 });
+export async function POST(req: NextRequest) {
+  try {
+    const { userId, referrerId } = await req.json()
+
+    if (!userId || !referrerId) {
+      return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
+    }
+
+    // تحديث بيانات الإحالة في قاعدة البيانات
+    const user = await prisma.user.update({
+      where: { telegramId: userId },
+      data: {
+        referrer: referrerId, // تخزين معرف المحيل
+      },
+    })
+
+    return NextResponse.json(user)
+  } catch (error) {
+    console.error('Error saving referral:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  saveReferral(userId, referrerId);
-  return NextResponse.json({ success: true });
 }
 
-export async function GET(request: NextRequest) {
-  const userId = request.nextUrl.searchParams.get('userId');
-  
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url)
+    const userId = url.searchParams.get('userId')
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { telegramId: userId },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({
+      referrals: user.referrals, // أو أي حقول أخرى متعلقة بالإحالات
+      referrer: user.referrer, // المحيل
+    })
+  } catch (error) {
+    console.error('Error fetching referrals:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  const referrals = getReferrals(userId);
-  const referrer = getReferrer(userId);
-
-  return NextResponse.json({ referrals, referrer });
 }
