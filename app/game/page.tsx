@@ -23,9 +23,9 @@ export default function Home() {
         const userIdString = initDataUnsafe.user?.id?.toString() || '';
         setUserId(userIdString);
         setStartParam(initDataUnsafe.start_param || '');
-        
+
         // التعامل مع المحيل
-        const referrerString = initDataUnsafe.referrer || null;
+        const referrerString = initDataUnsafe.referrer ? initDataUnsafe.referrer : null;
         setReferrer(referrerString);
       }
     };
@@ -43,7 +43,6 @@ export default function Home() {
           if (data.error) {
             console.error(data.error);
           } else {
-            // التحقق من البيانات المستلمة
             setReferrals(data.referrals || []);
           }
         } catch (error) {
