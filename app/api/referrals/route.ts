@@ -10,11 +10,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
     }
 
+    // تأكد من تحويل userId إلى رقم
+    const userIdNumber = Number(userId)
+    const referrerIdNumber = Number(referrerId)
+
+    if (isNaN(userIdNumber) || isNaN(referrerIdNumber)) {
+      return NextResponse.json({ error: 'Invalid user or referrer ID' }, { status: 400 })
+    }
+
     // تحديث بيانات الإحالة في قاعدة البيانات
     const user = await prisma.user.update({
-      where: { telegramId: userId },
+      where: { telegramId: userIdNumber },
       data: {
-        referrer: referrerId, // تخزين معرف المحيل
+        referrer: referrerIdNumber, // تخزين معرف المحيل
       },
     })
 
@@ -34,8 +42,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
     }
 
+    // تأكد من تحويل userId إلى رقم
+    const userIdNumber = Number(userId)
+
+    if (isNaN(userIdNumber)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+    }
+
     const user = await prisma.user.findUnique({
-      where: { telegramId: userId },
+      where: { telegramId: userIdNumber },
     })
 
     if (!user) {
