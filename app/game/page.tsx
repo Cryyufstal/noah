@@ -17,12 +17,15 @@ export default function Home() {
         const WebApp = (await import('@twa-dev/sdk')).default;
         WebApp.ready();
         setInitData(WebApp.initData);
-        const userIdString = WebApp.initDataUnsafe.user?.id.toString() || '';
+        
+        // التحقق من وجود البيانات قبل الوصول إليها
+        const initDataUnsafe = WebApp.initDataUnsafe || {};
+        const userIdString = initDataUnsafe.user?.id?.toString() || '';
         setUserId(userIdString);
-        setStartParam(WebApp.initDataUnsafe.start_param || '');
-        const referrerString = WebApp.initDataUnsafe?.referrer || null;
-        setReferrer(referrerString);
-
+        setStartParam(initDataUnsafe.start_param || '');
+        
+        // التعامل مع المحيل
+        const referrerString = initDataUnsafe.referrer || null;
         setReferrer(referrerString);
       }
     };
@@ -40,6 +43,7 @@ export default function Home() {
           if (data.error) {
             console.error(data.error);
           } else {
+            // التحقق من البيانات المستلمة
             setReferrals(data.referrals || []);
           }
         } catch (error) {
