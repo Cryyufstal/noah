@@ -10,19 +10,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
     }
 
-    // تأكد من تحويل userId إلى رقم
+    // تأكد من تحويل userId و referrerId إلى أرقام
     const userIdNumber = Number(userId)
-    const referrerIdNumber = Number(referrerId)
+    const referrerIdNumber = String(referrerId) // تحويل referrerId إلى string
 
-    if (isNaN(userIdNumber) || isNaN(referrerIdNumber)) {
-      return NextResponse.json({ error: 'Invalid user or referrer ID' }, { status: 400 })
+    if (isNaN(userIdNumber)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
     // تحديث بيانات الإحالة في قاعدة البيانات
     const user = await prisma.user.update({
       where: { telegramId: userIdNumber },
       data: {
-        referrer: referrerIdNumber, // تخزين معرف المحيل
+        referrer: referrerIdNumber, // تخزين معرف المحيل كـ string
       },
     })
 
@@ -66,3 +66,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
