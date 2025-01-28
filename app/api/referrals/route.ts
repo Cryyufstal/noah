@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    // إرجاع فقط المحيل بدلاً من الإحالات
     return NextResponse.json({
-      referrals: user.referrals, // أو أي حقول أخرى متعلقة بالإحالات
       referrer: user.referrer, // المحيل
     })
   } catch (error) {
