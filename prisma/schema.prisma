@@ -8,12 +8,12 @@ generator client {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  telegramId  Int      @unique
-  username    String?
-  firstName   String?
-  lastName    String?
-  points      Int
-  referrer    String?  // المحيل
-  referrals   User[]   @relation("ReferralRelation", fields: [referrer], references: [id])
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  telegramId Int      @unique
+  username   String?
+  firstName  String?
+  lastName   String?
+  points     Int      @default(0)
+  referrer   String?  // الحقل الجديد للإحالة
 }
+
