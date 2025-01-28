@@ -20,7 +20,7 @@ export default function Home() {
         const userIdString = WebApp.initDataUnsafe.user?.id.toString() || '';
         setUserId(userIdString);
         setStartParam(WebApp.initDataUnsafe.start_param || '');
-        const referrerString = WebApp.initDataUnsafe.referrer || null;
+        const referrerString = WebApp.initDataUnsafe?.referrer || null;
         setReferrer(referrerString);
       }
     };
