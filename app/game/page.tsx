@@ -8,7 +8,6 @@ export default function Home() {
   const [initData, setInitData] = useState('');
   const [userId, setUserId] = useState('');
   const [startParam, setStartParam] = useState('');
-  const [referrer, setReferrer] = useState<string | null>(null);
   const [referrals, setReferrals] = useState<any[]>([]); // لحفظ الأشخاص المدعوين
 
   useEffect(() => {
@@ -18,15 +17,10 @@ export default function Home() {
         WebApp.ready();
         setInitData(WebApp.initData);
         
-        // التحقق من وجود البيانات قبل الوصول إليها
         const initDataUnsafe = WebApp.initDataUnsafe || {};
         const userIdString = initDataUnsafe.user?.id?.toString() || '';
         setUserId(userIdString);
         setStartParam(initDataUnsafe.start_param || '');
-
-        // التعامل مع المحيل
-        const referrerString = initDataUnsafe.referrer ? initDataUnsafe.referrer : null;
-        setReferrer(referrerString);
       }
     };
 
@@ -63,13 +57,6 @@ export default function Home() {
         <p className="text-gray-300 text-lg mb-8">
           Welcome to the referral system. Connect with your audience and share referral links seamlessly!
         </p>
-        
-        {/* عرض المحيل */}
-        {referrer && (
-          <div className="text-gray-300 mb-4">
-            <p>You were referred by user: <span className="text-green-400">{referrer}</span></p>
-          </div>
-        )}
 
         {/* المكون الخاص بنظام الإحالة */}
         <ReferralSystem initData={initData} userId={userId} startParam={startParam} />
