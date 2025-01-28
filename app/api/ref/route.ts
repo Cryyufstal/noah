@@ -1,7 +1,7 @@
 // app/api/referrals/route.ts
 
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // تأكد من إعداد Prisma بشكل صحيح
+import { prisma } from '@/lib/prisma'; // تأكد من إعداد Prisma بشكل صحيح
 
 export async function GET(request: Request) {
   try {
