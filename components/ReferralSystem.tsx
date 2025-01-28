@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { initUtils } from '@telegram-apps/sdk'
+
 interface ReferralSystemProps {
   initData: string
   userId: string
@@ -10,17 +11,19 @@ interface ReferralSystemProps {
 const ReferralSystem: React.FC<ReferralSystemProps> = ({ initData, userId, startParam }) => {
   const [referrals, setReferrals] = useState<string[]>([])
   const [referrer, setReferrer] = useState<string | null>(null)
-  const INVITE_URL = "https://t.me/freedfufu_bot/toyyyyer"
+  const INVITE_URL = "https://t.me/newtestine_bot/reffer/"
 
   useEffect(() => {
     const checkReferral = async () => {
       if (startParam && userId) {
         try {
+          // إرسال بيانات الإحالة إلى الخادم
           const response = await fetch('/api/referrals', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, referrerId: startParam }),
+            body: JSON.stringify({ userId, referrerId: startParam }), // إرسال بيانات الإحالة
           });
+
           if (!response.ok) throw new Error('Failed to save referral');
         } catch (error) {
           console.error('Error saving referral:', error);
@@ -31,11 +34,12 @@ const ReferralSystem: React.FC<ReferralSystemProps> = ({ initData, userId, start
     const fetchReferrals = async () => {
       if (userId) {
         try {
+          // جلب الإحالات من الخادم
           const response = await fetch(`/api/referrals?userId=${userId}`);
           if (!response.ok) throw new Error('Failed to fetch referrals');
           const data = await response.json();
-          setReferrals(data.referrals);
-          setReferrer(data.referrer);
+          setReferrals(data.referrals || []); // التعامل مع بيانات الإحالات
+          setReferrer(data.referrer || null); // التعامل مع معرف الشخص المحال
         } catch (error) {
           console.error('Error fetching referrals:', error);
         }
@@ -96,3 +100,4 @@ const ReferralSystem: React.FC<ReferralSystemProps> = ({ initData, userId, start
 }
 
 export default ReferralSystem
+
