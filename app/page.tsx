@@ -1,115 +1,109 @@
 'use client';
+import BottomNavigation from '@/components/BottomNavigation';
+import { useState, useEffect } from 'react';
 
-import { useEffect, useState } from 'react';
-import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: any;
-    };
-  }
+interface Task {
+  id: number;
+  title: string;
+  url: string;
+  completed: boolean;
 }
 
-export default function Home() {
-  const [user, setUser] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [points, setPoints] = useState<number>(0);
+const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string }) => {
+  const [taskList, setTaskList] = useState<Task[]>(tasks);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
+    // تحميل المهام المكتملة من localStorage
+    const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+    setTaskList(prevTasks => prevTasks.filter(task => !completedTasks.includes(task.id)));
 
-      const initDataUnsafe = tg.initDataUnsafe || {};
+    // التحقق من رابط الإحالة
+    const referrer = document.referrer;
+    if (referrer) {
+      alert(`You arrived at this app from: ${referrer}`);
 
-      if (initDataUnsafe.user) {
-        fetch('/api/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(initDataUnsafe.user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error);
-            } else {
-              setUser(data);
-              setPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
-            }
-          })
-          .catch((err) => {
-            console.error('Error fetching user data:', err);
-            setError('Failed to fetch user data');
-          });
-      } else {
-        setError('No user data available');
-      }
-    } else {
-      setError('This app should be opened in Telegram');
+      // إرسال رابط الإحالة إلى الخادم
+      fetch('/api/log-referrer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ telegramId, referrer }),
+      }).catch(err => console.error('Failed to log referrer:', err));
     }
   }, []);
 
-  const handleImageClick = () => {
-    const newPoints = points + 1;
-    setPoints(newPoints);
+  const handleTaskClick = async (taskId: number) => {
+    try {
+      const task = taskList.find(t => t.id === taskId);
+      if (task) {
+        window.open(task.url, '_blank');
+      }
 
-    fetch('/api/increase-points', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        telegramId: user.telegramId, // إرسال معرّف المستخدم
-        points: newPoints,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          console.error('Error updating points:', data.error);
-        } else {
-          console.log('Points updated successfully');
-        }
-      })
-      .catch((err) => {
-        console.error('Error updating points:', err);
-      });
+      setTaskList(prevTasks =>
+        prevTasks.map(t =>
+          t.id === taskId ? { ...t, completed: true } : t
+        )
+      );
+    } catch (error) {
+      console.error('Error opening task:', error);
+    }
   };
 
-  if (error) {
-    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
-  }
+  const handleCheckClick = async (taskId: number) => {
+    try {
+      const response = await fetch('/api/update-points', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ telegramId }),
+      });
 
-  if (!user) return <div className="container mx-auto p-4">Loading...</div>;
+      if (!response.ok) {
+        throw new Error('Failed to update points');
+      }
+
+      setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
+
+      // حفظ المهمة المكتملة في localStorage
+      const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      completedTasks.push(taskId);
+      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+    } catch (error) {
+      console.error('Error updating points:', error);
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
-      {/* محتوى الصفحة */}
-      <div className="p-6">
-        {/* عنوان مرحب */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
-          <p className="text-lg text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>Tasks</h1>
+      {taskList.map(task => (
+        <div key={task.id} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{task.title}</span>
+            {!task.completed ? (
+              <button
+                onClick={() => handleTaskClick(task.id)}
+                style={{ padding: '5px 10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '3px' }}
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={() => handleCheckClick(task.id)}
+                style={{ padding: '5px 10px', backgroundColor: '#28A745', color: 'white', border: 'none', borderRadius: '3px' }}
+              >
+                Check
+              </button>
+            )}
+          </div>
         </div>
-
-        {/* بطاقة النقاط */}
-        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
-          <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
-          <img
-            src="/images/dog.png"
-            alt="Click to earn points"
-            className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
-            onClick={handleImageClick}
-          />
-        </div>
-      </div>
-
-      {/* شريط سفلي */}
+      ))}
       <BottomNavigation />
     </div>
   );
-}
+};
+
+export default TasksPage;
 
