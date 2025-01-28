@@ -22,6 +22,8 @@ export default function Home() {
         setStartParam(WebApp.initDataUnsafe.start_param || '');
         const referrerString = WebApp.initDataUnsafe?.referrer || null;
         setReferrer(referrerString);
+
+        setReferrer(referrerString);
       }
     };
 
