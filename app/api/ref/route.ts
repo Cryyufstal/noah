@@ -1,32 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+// app/api/referrals/route.ts
 
-export async function POST(req: NextRequest) {
-    try {
-        const { telegramId } = await req.json()
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma'; // تأكد من إعداد Prisma بشكل صحيح
 
-        if (!telegramId) {
-            return NextResponse.json({ error: 'Invalid telegramId' }, { status: 400 })
-        }
-
-        // تحقق من وجود المستخدم
-        const user = await prisma.user.findUnique({
-            where: { telegramId },
-        })
-
-        if (!user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 })
-        }
-
-        // تحديث النقاط
-        const updatedUser = await prisma.user.update({
-            where: { telegramId },
-            data: { points: { increment: 500 } }
-        })
-
-        return NextResponse.json({ success: true, points: updatedUser.points })
-    } catch (error) {
-        console.error('Error increasing points:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+export async function GET(request: Request) {
+  try {
+    // الحصول على userId من المعاملات
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
+
+    // استعلام قاعدة البيانات للحصول على الأشخاص الذين تمت دعوتهم بواسطة المستخدم الحالي
+    const user = await prisma.user.findUnique({
+      where: { telegramId: parseInt(userId) }, // أو String إذا كان النوع String
+      include: {
+        referrals: true, // افتراضياً لدينا علاقة بين المستخدمين
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // إرسال البيانات إلى العميل
+    return NextResponse.json({
+      referrals: user.referrals,
+      referrer: user.referrer,
+    });
+  } catch (error) {
+    console.error('Error fetching referrals:', error);
+    return NextResponse.json({ error: 'Failed to fetch referrals' }, { status: 500 });
+  }
 }
+
