@@ -8,11 +8,12 @@ generator client {
 }
 
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  telegramId Int      @unique
-  username   String?
-  firstName  String?
-  lastName   String?
-  points     Int      @default(0)
-  referrer   Int?  // الحقل الجديد للإحالة
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  telegramId     Int      @unique
+  username       String?
+  firstName      String?
+  lastName       String?
+  points         Int      @default(0)
+  referrer       Int?  // معرف المحيل
+  total_referral Int      @default(0)  // عدد الإحالات التي قام بها المستخدم
 }
