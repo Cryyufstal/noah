@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(req: Request) {
+// ✅ دالة GET: استرجاع عدد الإحالات للمستخدم
+export async function GET(req: Request) {
   try {
-    const url = new URL(request.url);
+    const url = new URL(req.url);
     const userId = url.searchParams.get('userId');
 
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { telegramId: Number(userId) },
+      select: { total_referral: true }, // فقط استرجاع عدد الإحالات
+    });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -18,14 +27,8 @@ export async function POST(req: Request) {
   }
 }
 
-    const user = await prisma.user.findUnique({
-      where: { telegramId: parseInt(userId) },
-      select: { total_referral: true }, // استرجاع عدد الإحالات فقط
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+// ✅ دالة POST: تسجيل إحالة جديدة وزيادة النقاط
+export async function POST(req: Request) {
   try {
     const { userId, referrerId } = await req.json();
 
@@ -54,12 +57,12 @@ export async function POST(req: Request) {
     }
 
     // تحديث بيانات المستخدم وتسجيل الإحالة
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { telegramId: userIdNumber },
       data: { referrer: referrerIdNumber },
     });
 
-    // التحقق من وجود المحيل وإضافة النقاط مرة واحدة فقط
+    // التحقق من وجود المحيل وإضافة النقاط
     const referrer = await prisma.user.findUnique({
       where: { telegramId: referrerIdNumber },
     });
@@ -68,7 +71,7 @@ export async function POST(req: Request) {
       await prisma.user.update({
         where: { telegramId: referrerIdNumber },
         data: {
-          points: referrer.points + 500, // إضافة النقاط مرة واحدة فقط
+          points: referrer.points + 500, // إضافة النقاط للمحيل
           total_referral: (referrer.total_referral || 0) + 1, // زيادة عدد الإحالات بمقدار 1
         },
       });
@@ -80,3 +83,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
