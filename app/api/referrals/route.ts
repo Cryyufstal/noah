@@ -1,78 +1,48 @@
-// /app/api/referrals/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { userId, referrerId } = await req.json()
+    const { userId, referrerId } = await req.json();
 
     if (!userId || !referrerId) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    // تأكد من تحويل userId و referrerId إلى أرقام صحيحة
-    const userIdNumber = Number(userId)
-    const referrerIdNumber = referrerId ? Number(referrerId) : null // ✅ تحويل إلى رقم أو null
+    const userIdNumber = Number(userId);
+    const referrerIdNumber = Number(referrerId);
 
-    if (isNaN(userIdNumber) || (referrerIdNumber !== null && isNaN(referrerIdNumber))) {
-      return NextResponse.json({ error: 'Invalid user or referrer ID' }, { status: 400 })
-    }
-// البحث عن المستخدم في قاعدة البيانات
-const existingUser = await prisma.user.findUnique({
-  where: { telegramId: userIdNumber },
-});
-
-// إذا كان لديه محيل مسبقًا، لا تقم بتغييره
-if (existingUser?.referrer) {
-  return NextResponse.json({ message: 'Referral ID is already set' });
-}
-
-// تحديث قاعدة البيانات فقط إذا لم يكن لديه محيل سابق
-const user = await prisma.user.update({
-  where: { telegramId: userIdNumber },
-  data: {
-    referrer: referrerIdNumber, // تخزين معرف المحيل فقط إذا لم يكن موجودًا مسبقًا
-  },
-});
-
-
-    return NextResponse.json(user)
-  } catch (error) {
-    console.error('Error saving referral:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const url = new URL(req.url)
-    const userId = url.searchParams.get('userId')
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    if (isNaN(userIdNumber) || isNaN(referrerIdNumber)) {
+      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
     }
 
-    // تأكد من تحويل userId إلى رقم صحيح
-    const userIdNumber = Number(userId)
-
-    if (isNaN(userIdNumber)) {
-      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
-    }
-
-    const user = await prisma.user.findUnique({
+    // تحقق مما إذا كان المستخدم مسجلاً بالفعل بمحيل
+    const existingUser = await prisma.user.findUnique({
       where: { telegramId: userIdNumber },
-    })
+    });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!existingUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // إرجاع المحيل فقط
-    return NextResponse.json({
-      referrer: user.referrer, // المحيل
-    })
+    if (existingUser.referrer) {
+      return NextResponse.json({ error: 'User already has a referrer' }, { status: 400 });
+    }
+
+    // تسجيل الإحالة
+    await prisma.user.update({
+      where: { telegramId: userIdNumber },
+      data: { referrer: referrerIdNumber },
+    });
+
+    // 🔥 استدعاء API النقاط تلقائيًا
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ref?userId=${userIdNumber}`, {
+      method: 'GET',
+    });
+
+    return NextResponse.json({ message: 'Referral registered and referrer updated' });
   } catch (error) {
-    console.error('Error fetching referrals:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error saving referral:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
