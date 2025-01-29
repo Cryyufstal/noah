@@ -31,7 +31,7 @@ export default function Home() {
     const fetchReferrals = async () => {
       if (userId) {
         try {
-          const response = await fetch(`/api/ref?userId=${userId}`);
+          const response = await fetch(`/api/referrals?userId=${userId}`);
           const data = await response.json();
 
           if (data.error) {
