@@ -3,6 +3,30 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ total_referrals: user.total_referral || 0 });
+  } catch (error) {
+    console.error('Error fetching total referrals:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+    const user = await prisma.user.findUnique({
+      where: { telegramId: parseInt(userId) },
+      select: { total_referral: true }, // استرجاع عدد الإحالات فقط
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+  try {
     const { userId, referrerId } = await req.json();
 
     if (!userId || !referrerId) {
