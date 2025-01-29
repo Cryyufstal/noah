@@ -61,30 +61,8 @@ export default function Home() {
   }, []);
 
   const handleImageClick = () => {
-    const newPoints = points + 1;
-    setPoints(newPoints);
-
-    fetch('/api/increase-points', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        telegramId: user.telegramId, // إرسال معرّف المستخدم
-        points: newPoints,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          console.error('Error updating points:', data.error);
-        } else {
-          console.log('Points updated successfully');
-        }
-      })
-      .catch((err) => {
-        console.error('Error updating points:', err);
-      });
+    // إعادة تحميل الصفحة عند النقر على الصورة
+    window.location.reload();
   };
 
   if (error) {
@@ -99,8 +77,8 @@ export default function Home() {
       <div className="p-6">
         {/* عنوان مرحب */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
-          <p className="text-lg text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
+          <h1 className="text-2xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
+          <p className="text-3xl text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
         </div>
 
         {/* بطاقة النقاط */}
@@ -109,7 +87,7 @@ export default function Home() {
           <img
             src="/images/dog.png"
             alt="Click to earn points"
-            className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
+            className="cursor-pointer mx-auto w-48 h-48 rounded-xl shadow-md transition-transform duration-300 hover:scale-110"
             onClick={handleImageClick}
           />
         </div>
@@ -120,3 +98,4 @@ export default function Home() {
     </div>
   );
 }
+
