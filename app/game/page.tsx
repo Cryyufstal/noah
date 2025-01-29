@@ -8,7 +8,7 @@ export default function Home() {
   const [initData, setInitData] = useState('');
   const [userId, setUserId] = useState('');
   const [startParam, setStartParam] = useState('');
-  const [referrals, setReferrals] = useState<any[]>([]); // لحفظ الأشخاص المدعوين
+  const [totalReferrals, setTotalReferrals] = useState(0); // عدد الأشخاص المدعوين
 
   useEffect(() => {
     const initWebApp = async () => {
@@ -28,7 +28,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const fetchReferrals = async () => {
+    const fetchTotalReferrals = async () => {
       if (userId) {
         try {
           const response = await fetch(`/api/referrals?userId=${userId}`);
@@ -37,15 +37,15 @@ export default function Home() {
           if (data.error) {
             console.error(data.error);
           } else {
-            setReferrals(data.referrals || []);
+            setTotalReferrals(data.total_referrals || 0);
           }
         } catch (error) {
-          console.error('Error fetching referrals:', error);
+          console.error('Error fetching total referrals:', error);
         }
       }
     };
 
-    fetchReferrals();
+    fetchTotalReferrals();
   }, [userId]);
 
   return (
@@ -61,20 +61,10 @@ export default function Home() {
         {/* المكون الخاص بنظام الإحالة */}
         <ReferralSystem initData={initData} userId={userId} startParam={startParam} />
 
-        {/* الجزء السفلي: عرض الأشخاص المدعوين من قبل المستخدم */}
+        {/* عرض عدد الأشخاص المدعوين */}
         <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4 text-gray-300">People You Referred:</h2>
-          {referrals.length > 0 ? (
-            <ul>
-              {referrals.map((referral, index) => (
-                <li key={index} className="bg-gray-700 p-3 rounded mb-2">
-                  User {referral.firstName} (TelegramID: {referral.telegramId})
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-400">No referrals yet.</p>
-          )}
+          <h2 className="text-2xl font-bold mb-4 text-gray-300">Total Referrals:</h2>
+          <p className="text-3xl font-semibold text-blue-400">{totalReferrals}</p>
         </div>
       </div>
 
