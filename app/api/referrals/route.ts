@@ -17,14 +17,24 @@ export async function POST(req: NextRequest) {
     if (isNaN(userIdNumber) || (referrerIdNumber !== null && isNaN(referrerIdNumber))) {
       return NextResponse.json({ error: 'Invalid user or referrer ID' }, { status: 400 })
     }
+// البحث عن المستخدم في قاعدة البيانات
+const existingUser = await prisma.user.findUnique({
+  where: { telegramId: userIdNumber },
+});
 
-    // تحديث بيانات الإحالة في قاعدة البيانات
-    const user = await prisma.user.update({
-      where: { telegramId: userIdNumber },
-      data: {
-        referrer: referrerIdNumber, // ✅ تخزين كـ number أو null
-      },
-    })
+// إذا كان لديه محيل مسبقًا، لا تقم بتغييره
+if (existingUser?.referrer) {
+  return NextResponse.json({ message: 'Referral ID is already set' });
+}
+
+// تحديث قاعدة البيانات فقط إذا لم يكن لديه محيل سابق
+const user = await prisma.user.update({
+  where: { telegramId: userIdNumber },
+  data: {
+    referrer: referrerIdNumber, // تخزين معرف المحيل فقط إذا لم يكن موجودًا مسبقًا
+  },
+});
+
 
     return NextResponse.json(user)
   } catch (error) {
