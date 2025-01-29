@@ -29,18 +29,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User already has a referrer' }, { status: 400 });
     }
 
-    // تسجيل الإحالة
-    await prisma.user.update({
+    // تحديث بيانات المستخدم وتسجيل الإحالة
+    const updatedUser = await prisma.user.update({
       where: { telegramId: userIdNumber },
       data: { referrer: referrerIdNumber },
     });
 
-    // 🔥 استدعاء API النقاط تلقائيًا
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ref?userId=${userIdNumber}`, {
-      method: 'GET',
+    // التحقق من وجود المحيل وإضافة النقاط مرة واحدة فقط
+    const referrer = await prisma.user.findUnique({
+      where: { telegramId: referrerIdNumber },
     });
 
-    return NextResponse.json({ message: 'Referral registered and referrer updated' });
+    if (referrer) {
+      await prisma.user.update({
+        where: { telegramId: referrerIdNumber },
+        data: {
+          points: referrer.points + 500, // إضافة النقاط مرة واحدة فقط
+          total_referral: (referrer.total_referral || 0) + 1, // زيادة عدد الإحالات بمقدار 1
+        },
+      });
+    }
+
+    return NextResponse.json({ message: 'Referral registered and points updated' });
   } catch (error) {
     console.error('Error saving referral:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
