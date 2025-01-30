@@ -1,8 +1,9 @@
+
 'use client';
 import BottomNavigation from '@/components/BottomNavigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
-import { Address } from "@ton/core";
+import { Address, toNano } from "@ton/core";
 
 export default function Home() {
   const [tonConnectUI] = useTonConnectUI();
@@ -54,6 +55,28 @@ export default function Home() {
     }
   };
 
+  const sendTon = async () => {
+    if (!tonConnectUI.connected || !tonWalletAddress) return;
+
+    try {
+      const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
+      const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
+      
+      await tonConnectUI.sendTransaction({
+        messages: [
+          {
+            address: recipient,
+            amount: amount.toString(),
+          },
+        ],
+      });
+      alert("Transaction sent successfully!");
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      alert("Transaction failed. Please try again.");
+    }
+  };
+
   const formatAddress = (address: string) => {
     const tempAddress = Address.parse(address).toString();
     return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
@@ -72,7 +95,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 text-white">
       <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-       connect your ton wallet
+       Connect your TON wallet
       </h1>
       {tonWalletAddress ? (
         <div className="flex flex-col items-center">
@@ -81,9 +104,15 @@ export default function Home() {
           </p>
           <button
             onClick={handleWalletAction}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 mb-4"
           >
             Disconnect Wallet
+          </button>
+          <button
+            onClick={sendTon}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Send 0.2 TON
           </button>
         </div>
       ) : (
@@ -98,4 +127,3 @@ export default function Home() {
     </main>
   );
 }
-
