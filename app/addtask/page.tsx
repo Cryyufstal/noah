@@ -1,7 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
+import BottomNavigation from '@/components/BottomNavigation';
+
+interface Task {
+  id: number;
+  title: string;
+  url: string;
+  points: number;
+  completed: boolean;
+}
 
 declare global {
   interface Window {
@@ -11,11 +19,35 @@ declare global {
   }
 }
 
-export default function Home() {
+export default function TasksPage() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [points, setPoints] = useState<number>(0);
 
+  // تحميل بيانات المهام المخزنة للمستخدم الحالي
+  useEffect(() => {
+    if (user?.telegramId) {
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      } else {
+        setTasks([
+          { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+          { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+        ]);
+      }
+    }
+  }, [user]);
+
+  // حفظ المهام عند تغييرها
+  useEffect(() => {
+    if (user?.telegramId) {
+      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
+
+  // التأكد من وجود Telegram WebApp
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
@@ -24,20 +56,10 @@ export default function Home() {
       const initDataUnsafe = tg.initDataUnsafe || {};
 
       if (initDataUnsafe.user) {
-        // استخراج معلمة start من رابط التطبيق
-        const urlParams = new URLSearchParams(window.location.search);
-        const referrer = urlParams.get('start') || null;
-
-        // إرسال بيانات المستخدم إلى الخادم مع رابط الإحالة
         fetch('/api/user', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...initDataUnsafe.user,
-            referrer, // إرسال رابط الإحالة المستخرج
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(initDataUnsafe.user),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -45,7 +67,7 @@ export default function Home() {
               setError(data.error);
             } else {
               setUser(data);
-              setPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
+              setUserPoints(data.points || 0);
             }
           })
           .catch((err) => {
@@ -60,17 +82,26 @@ export default function Home() {
     }
   }, []);
 
-  const handleImageClick = () => {
-    const newPoints = points + 1;
-    setPoints(newPoints);
+  const handleOpenTask = (id: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, completed: true } : task
+      )
+    );
+  };
 
-    fetch('/api/increase-points', {
+  const handleCompleteTask = async (id: number, points: number) => {
+    const newPoints = userPoints + points;
+    setUserPoints(newPoints);
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+
+    await fetch('/api/update-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        telegramId: user.telegramId, // إرسال معرّف المستخدم
+        telegramId: user?.telegramId,
         points: newPoints,
       }),
     })
@@ -94,29 +125,43 @@ export default function Home() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
-      {/* محتوى الصفحة */}
-      <div className="p-6">
-        {/* عنوان مرحب */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-extrabold text-blue-500"> {user.firstName}!</h1>
-          <p className="text-3xl text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
-        </div>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
-        {/* بطاقة النقاط */}
-        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
-          <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
-          <img
-            src="/images/dog.png"
-            alt="Click to earn points"
-            className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
-            onClick={handleImageClick}
-          />
-        </div>
+      <div className="mb-4 text-lg font-medium">
+        Your Points: <span className="text-blue-500">{userPoints}</span>
       </div>
 
-      {/* شريط سفلي */}
+      <ul className="w-full max-w-lg">
+        {tasks.map((task) => (
+          <li
+            key={task.id}
+            className="flex justify-between items-center p-4 border-b"
+          >
+            <span className="text-lg">{task.title}</span>
+            {!task.completed ? (
+              <button
+                onClick={() => {
+                  window.open(task.url, '_blank');
+                  handleOpenTask(task.id);
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
+              >
+                Task
+              </button>
+            ) : (
+              <button
+                onClick={() => handleCompleteTask(task.id, task.points)}
+                className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded"
+              >
+                Check
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
       <BottomNavigation />
-    </div>
+    </main>
   );
 }
+
