@@ -1,4 +1,3 @@
-
 'use client';
 import BottomNavigation from '@/components/BottomNavigation';
 import { useState, useEffect, useCallback } from 'react';
@@ -54,29 +53,23 @@ export default function Home() {
       await tonConnectUI.openModal();
     }
   };
-const sendTon = async () => {
-  if (!tonConnectUI.connected || !tonWalletAddress) return;
 
-  try {
-    const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
-    const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
+  const sendTon = async () => {
+    if (!tonConnectUI.connected || !tonWalletAddress) return;
 
-    await tonConnectUI.sendTransaction({
-      messaes: [
-        {
-          address: recipient,
-          amount: amount.toString(),
-        },
-      ],
-      validUntil: Math.floor(Date.now() / 1000) + 600, // يحدد صلاحية المعاملة لمدة 10 دقائق
-    });
+    try {
+      const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
+      const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
 
-    alert("Transaction sent successfully!");
-  } catch (error) {
-    console.error("Transaction failed:", error);
-    alert("Transaction failed. Please try again.");
-  }
-};
+      await tonConnectUI.sendTransaction({
+        messages: [
+          {
+            address: recipient,
+            amount: amount.toString(),
+          },
+        ],
+        validUntil: Math.floor(Date.now() / 1000) + 600, // صلاحية 10 دقائق
+      });
 
       alert("Transaction sent successfully!");
     } catch (error) {
@@ -103,7 +96,7 @@ const sendTon = async () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 text-white">
       <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-       Connect your TON wallet
+        Connect your TON wallet
       </h1>
       {tonWalletAddress ? (
         <div className="flex flex-col items-center">
@@ -135,3 +128,4 @@ const sendTon = async () => {
     </main>
   );
 }
+
