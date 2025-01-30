@@ -97,8 +97,6 @@ export default function Home() {
   </div>
 );
 
-);
-
 
   return (
     <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
