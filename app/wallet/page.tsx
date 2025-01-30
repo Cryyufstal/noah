@@ -54,22 +54,30 @@ export default function Home() {
       await tonConnectUI.openModal();
     }
   };
+const sendTon = async () => {
+  if (!tonConnectUI.connected || !tonWalletAddress) return;
 
-  const sendTon = async () => {
-    if (!tonConnectUI.connected || !tonWalletAddress) return;
+  try {
+    const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
+    const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
 
-    try {
-      const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
-      const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
-      
-      await tonConnectUI.sendTransaction({
-        messages: [
-          {
-            address: recipient,
-            amount: amount.toString(),
-          },
-        ],
-      });
+    await tonConnectUI.sendTransaction({
+      messaes: [
+        {
+          address: recipient,
+          amount: amount.toString(),
+        },
+      ],
+      validUntil: Math.floor(Date.now() / 1000) + 600, // يحدد صلاحية المعاملة لمدة 10 دقائق
+    });
+
+    alert("Transaction sent successfully!");
+  } catch (error) {
+    console.error("Transaction failed:", error);
+    alert("Transaction failed. Please try again.");
+  }
+};
+
       alert("Transaction sent successfully!");
     } catch (error) {
       console.error("Transaction failed:", error);
