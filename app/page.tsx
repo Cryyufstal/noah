@@ -91,7 +91,12 @@ export default function Home() {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
 
-  if (!user) return <div className="container mx-auto p-4">Loading...</div>;
+ if (!user) return (
+  <div className="flex justify-center items-center min-h-screen bg-gray-900">
+    <img src="/images/dog.gif" alt="Loading..." className="w-20 h-20" />
+  </div>
+);
+
 
   return (
     <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
@@ -99,7 +104,7 @@ export default function Home() {
       <div className="p-6">
         {/* عنوان مرحب */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
+          <h1 className="text-2xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
           <p className="text-lg text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
         </div>
 
@@ -108,7 +113,7 @@ export default function Home() {
           <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
           <img
             src="/images/dog.png"
-            alt="Click to earn points"
+            alt=""
             className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
             onClick={handleImageClick}
           />
