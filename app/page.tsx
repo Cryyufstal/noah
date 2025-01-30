@@ -91,10 +91,12 @@ export default function Home() {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
 
- if (!user) return (
-  <div className="flex justify-center items-center min-h-screen bg-gray-900">
-    <img src="/images/miz.gif" alt="Loading..." className="w-20 h-20" />
+if (!user) return (
+  <div className="flex justify-center items-center w-full h-screen bg-gray-900">
+    <img src="/images/miz.gif" alt="Loading..." className="w-full h-full object-cover" />
   </div>
+);
+
 );
 
 
