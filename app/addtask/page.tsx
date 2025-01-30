@@ -1,14 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import BottomNavigation from '@/components/BottomNavigation';
-interface Task {
-  id: number;
-  title: string;
-  url: string;
-  points: number;
-  completed: boolean;
-}
+import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
 
 declare global {
   interface Window {
@@ -18,31 +11,10 @@ declare global {
   }
 }
 
-export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [userPoints, setUserPoints] = useState(0);
+export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks([
-          { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-          { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-        ]);
-      }
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user?.telegramId) {
-      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
-    }
-  }, [tasks, user]);
+  const [points, setPoints] = useState<number>(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -52,10 +24,20 @@ export default function TasksPage() {
       const initDataUnsafe = tg.initDataUnsafe || {};
 
       if (initDataUnsafe.user) {
+        // استخراج معلمة start من رابط التطبيق
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrer = urlParams.get('start') || null;
+
+        // إرسال بيانات المستخدم إلى الخادم مع رابط الإحالة
         fetch('/api/user', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(initDataUnsafe.user),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...initDataUnsafe.user,
+            referrer, // إرسال رابط الإحالة المستخرج
+          }),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -63,7 +45,7 @@ export default function TasksPage() {
               setError(data.error);
             } else {
               setUser(data);
-              setUserPoints(data.points || 0);
+              setPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
             }
           })
           .catch((err) => {
@@ -78,26 +60,17 @@ export default function TasksPage() {
     }
   }, []);
 
-  const handleOpenTask = (id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: true } : task
-      )
-    );
-  };
+  const handleImageClick = () => {
+    const newPoints = points + 1;
+    setPoints(newPoints);
 
-  const handleCompleteTask = async (id: number, points: number) => {
-    const newPoints = userPoints + points;
-    setUserPoints(newPoints);
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-
-    await fetch('/api/update-points', {
+    fetch('/api/increase-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        telegramId: user?.telegramId,
+        telegramId: user.telegramId, // إرسال معرّف المستخدم
         points: newPoints,
       }),
     })
@@ -114,14 +87,6 @@ export default function TasksPage() {
       });
   };
 
-  const handleAddTask = (newTask: Task) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
-
-  const handleRemoveTask = (id: number) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-  };
-
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
@@ -129,63 +94,29 @@ export default function TasksPage() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-6">Tasks</h1>
+    <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
+      {/* محتوى الصفحة */}
+      <div className="p-6">
+        {/* عنوان مرحب */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-extrabold text-blue-500"> {user.firstName}!</h1>
+          <p className="text-3xl text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
+        </div>
 
-      <div className="mb-4 text-lg font-medium">
-        Your Points: <span className="text-green-400">{userPoints}</span>
+        {/* بطاقة النقاط */}
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
+          <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
+          <img
+            src="/images/dog.png"
+            alt="Click to earn points"
+            className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
+            onClick={handleImageClick}
+          />
+        </div>
       </div>
 
-      <button
-        onClick={() =>
-          handleAddTask({
-            id: Date.now(),
-            title: 'New Task',
-            url: 'https://example.com/new-task',
-            points: 20,
-            completed: false,
-          })
-        }
-        className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded mb-4"
-      >
-        Add Task
-      </button>
-
-      <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
-          >
-            <span className="text-lg font-semibold">{task.title}</span>
-            {!task.completed ? (
-              <button
-                onClick={() => {
-                  window.open(task.url, '_blank');
-                  handleOpenTask(task.id);
-                }}
-                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
-              >
-                Task
-              </button>
-            ) : (
-              <button
-                onClick={() => handleCompleteTask(task.id, task.points)}
-                className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
-              >
-                Check
-              </button>
-            )}
-            <button
-              onClick={() => handleRemoveTask(task.id)}
-              className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded transition-all"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
+      {/* شريط سفلي */}
       <BottomNavigation />
-    </main>
+    </div>
   );
 }
