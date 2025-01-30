@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import BottomNavigation from '@/components/BottomNavigation';
-import tasks from '@/data/tasks';
+
 interface Task {
   id: number;
   title: string;
@@ -11,13 +11,11 @@ interface Task {
   completed: boolean;
 }
 
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: any;
-    };
-  }
-}
+const initialTasks: Task[] = [
+  { id: 1, title: 'Visit Website A', url: 'https://example.com', points: 10, completed: false },
+  { id: 2, title: 'Follow on Twitter', url: 'https://twitter.com', points: 5, completed: false },
+  { id: 3, title: 'Join Telegram Group', url: 'https://t.me/example', points: 8, completed: false },
+];
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -26,54 +24,42 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks(tasks);
-      }
-    }
-  }, [user]);
+    const savedTasks = localStorage.getItem('tasks');
+    const savedPoints = localStorage.getItem('userPoints');
 
-  useEffect(() => {
-    if (user?.telegramId) {
-      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
-    }
-  }, [tasks, user]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-
-      const initDataUnsafe = tg.initDataUnsafe || {};
-
-      if (initDataUnsafe.user) {
-        fetch('/api/user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(initDataUnsafe.user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error);
-            } else {
-              setUser(data);
-              setUserPoints(data.points || 0);
-            }
-          })
-          .catch((err) => {
-            console.error('Error fetching user data:', err);
-            setError('Failed to fetch user data');
-          });
-      } else {
-        setError('No user data available');
-      }
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
     } else {
-      setError('This app should be opened in Telegram');
+      setTasks(initialTasks);
     }
+
+    if (savedPoints) {
+      setUserPoints(Number(savedPoints));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      localStorage.setItem('userPoints', userPoints.toString());
+    }
+  }, [tasks, userPoints, user]);
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setUser(data);
+          setUserPoints(data.points || 0);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching user data:', err);
+        setError('Failed to fetch user data');
+      });
   }, []);
 
   const handleOpenTask = (id: number) => {
