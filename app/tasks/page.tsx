@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,11 +12,13 @@ interface Task {
   completed: boolean;
 }
 
-const initialTasks: Task[] = [
-  { id: 1, title: 'Visit Website A', url: 'https://example.com', points: 10, completed: false },
-  { id: 2, title: 'Follow on Twitter', url: 'https://twitter.com', points: 5, completed: false },
-  { id: 3, title: 'Join Telegram Group', url: 'https://t.me/example', points: 8, completed: false },
-];
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp: any;
+    };
+  }
+}
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -23,43 +26,61 @@ export default function TasksPage() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // تحميل بيانات المهام المخزنة للمستخدم الحالي
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    const savedPoints = localStorage.getItem('userPoints');
+    if (user?.telegramId) {
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      } else {
+        setTasks([
+          { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+          { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+        ]);
+      }
+    }
+  }, [user]);
 
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
+  // حفظ المهام عند تغييرها
+  useEffect(() => {
+    if (user?.telegramId) {
+      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
+
+  // التأكد من وجود Telegram WebApp
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+
+      const initDataUnsafe = tg.initDataUnsafe || {};
+
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error);
+            } else {
+              setUser(data);
+              setUserPoints(data.points || 0);
+            }
+          })
+          .catch((err) => {
+            console.error('Error fetching user data:', err);
+            setError('Failed to fetch user data');
+          });
+      } else {
+        setError('No user data available');
+      }
     } else {
-      setTasks(initialTasks);
+      setError('This app should be opened in Telegram');
     }
-
-    if (savedPoints) {
-      setUserPoints(Number(savedPoints));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      localStorage.setItem('userPoints', userPoints.toString());
-    }
-  }, [tasks, userPoints, user]);
-
-  useEffect(() => {
-    fetch('/api/user')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setUser(data);
-          setUserPoints(data.points || 0);
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching user data:', err);
-        setError('Failed to fetch user data');
-      });
   }, []);
 
   const handleOpenTask = (id: number) => {
@@ -105,34 +126,34 @@ export default function TasksPage() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
+    <main className="flex flex-col items-center justify-center min-h-screen p-4">
       <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
       <div className="mb-4 text-lg font-medium">
-        Your Points: <span className="text-green-400">{userPoints}</span>
+        Your Points: <span className="text-blue-500">{userPoints}</span>
       </div>
 
-      <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
+      <ul className="w-full max-w-lg">
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
+            className="flex justify-between items-center p-4 border-b"
           >
-            <span className="text-lg font-semibold">{task.title}</span>
+            <span className="text-lg">{task.title}</span>
             {!task.completed ? (
               <button
                 onClick={() => {
                   window.open(task.url, '_blank');
                   handleOpenTask(task.id);
                 }}
-                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
+                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
               >
                 Task
               </button>
             ) : (
               <button
                 onClick={() => handleCompleteTask(task.id, task.points)}
-                className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
+                className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded"
               >
                 Check
               </button>
@@ -144,4 +165,6 @@ export default function TasksPage() {
     </main>
   );
 }
+
+
 
