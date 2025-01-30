@@ -25,16 +25,16 @@ export default function TasksPage() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks(tasks);
-      }
-    }
-  }, [user]);
+useEffect(() => {
+  if (user?.telegramId) {
+    fetch('/api/tasks')
+      .then((res) => res.json())
+      .then((data) => {
+        setTasks(data);
+      })
+      .catch((err) => console.error('Error fetching tasks:', err));
+  }
+}, [user]);
 
   useEffect(() => {
     if (user?.telegramId) {
