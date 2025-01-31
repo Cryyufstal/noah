@@ -104,8 +104,16 @@ export default function Home() {
       <div className="p-6">
         {/* عنوان مرحب */}
         <div className="text-center mb-8">
-          <h1 className="text-1xl font-extrabold text-blue-500">, {user.firstName}!</h1>
-          <p className="text-lg text-yellow-150 mt-3"><span className="text-green-400 font-bold">{points}</span><img src="/images/dig.png" alt="coin" className="cursor-pointer mx-auto w-5 h-5 transition-transform duration-300 hover:scale-105" /></p>
+          <h1 className="text-1xl font-extrabold text-blue-500">welcome {user.username}!</h1>
+           <p className="text-lg text-yellow-150 mt-3 flex items-center gap-2">
+           <span className="text-yellow-400 font-bold text-xl">{points}</span>
+          <img
+          src="/images/dig.png"
+          alt="coin"
+          className="cursor-pointer w-15 h-12 transition-transform duration-300 hover:scale-105"
+          />
+          </p>
+
         </div>
 
         {/* بطاقة النقاط */}
