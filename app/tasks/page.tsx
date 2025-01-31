@@ -133,7 +133,11 @@ export default function TasksPage() {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
 
-  if (!user) return <div className="container mx-auto p-4">Loading...</div>;
+   if (!user) return (
+ <div className="flex justify-center items-center w-full h-screen bg-gray-900">
+    <img src="/images/miz.gif" alt="Loading..." className="w-full h-full object-cover" />
+  </div>
+)
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
