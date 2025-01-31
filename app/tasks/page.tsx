@@ -21,10 +21,10 @@ declare global {
 
 export default function TasksPage() {
   const initialTasks: Task[] = [
-    { id: 11, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-    { id: 12, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-    { id: 13, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
-    { id: 14, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
+    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+    { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
+    { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
   ];
 
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -51,12 +51,13 @@ export default function TasksPage() {
             if (data.error) {
               setError(data.error);
             } else {
+              console.log("✅ User data loaded:", data);
               setUser(data);
               setUserPoints(data.points || 0);
             }
           })
           .catch((err) => {
-            console.error('Error fetching user data:', err);
+            console.error('❌ Error fetching user data:', err);
             setError('Failed to fetch user data');
           });
       } else {
@@ -67,22 +68,25 @@ export default function TasksPage() {
     }
   }, []);
 
-  // ✅ تحميل المهام المخزنة حسب `telegramId`
+  // ✅ تحميل المهام عند توفر `user.telegramId`
   useEffect(() => {
     if (user?.telegramId) {
       const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
       if (savedTasks) {
+        console.log("📂 Loaded tasks from localStorage:", JSON.parse(savedTasks));
         setTasks(JSON.parse(savedTasks));
       } else {
+        console.log("🆕 No tasks found in localStorage. Setting default tasks.");
         setTasks(initialTasks);
         localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(initialTasks));
       }
     }
-  }, [user]);
+  }, [user]); // 🛠️ سيتم تشغيله فقط عند تغير `user`
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على `telegramId`
   useEffect(() => {
-    if (user?.telegramId) {
+    if (user?.telegramId && tasks.length > 0) {
+      console.log("💾 Saving tasks to localStorage:", tasks);
       localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
     }
   }, [tasks, user]);
@@ -113,13 +117,13 @@ export default function TasksPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
-          console.error('Error updating points:', data.error);
+          console.error('❌ Error updating points:', data.error);
         } else {
-          console.log('Points updated successfully');
+          console.log('✅ Points updated successfully');
         }
       })
       .catch((err) => {
-        console.error('Error updating points:', err);
+        console.error('❌ Error updating points:', err);
       });
   };
 
@@ -138,35 +142,39 @@ export default function TasksPage() {
       </div>
 
       <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
-          >
-            <span className="text-lg font-semibold">{task.title}</span>
-            {!task.completed ? (
-              <button
-                onClick={() => {
-                  window.open(task.url, '_blank');
-                  handleOpenTask(task.id);
-                }}
-                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
-              >
-                Task
-              </button>
-            ) : (
-              <button
-                onClick={() => handleCompleteTask(task.id, task.points)}
-                className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
-              >
-                Check
-              </button>
-            )}
-          </li>
-        ))}
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <li
+              key={task.id}
+              className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
+            >
+              <span className="text-lg font-semibold">{task.title}</span>
+              {!task.completed ? (
+                <button
+                  onClick={() => {
+                    window.open(task.url, '_blank');
+                    handleOpenTask(task.id);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
+                >
+                  Task
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleCompleteTask(task.id, task.points)}
+                  className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
+                >
+                  Check
+                </button>
+              )}
+            </li>
+          ))
+        ) : (
+          <li className="text-center text-gray-400 p-4">No tasks available.</li>
+        )}
       </ul>
+
       <BottomNavigation />
     </main>
   );
 }
-
