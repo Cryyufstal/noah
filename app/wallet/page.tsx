@@ -96,7 +96,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 text-white">
       <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-        Connect your TON wallet
+        Connect TON wallet
       </h1>
       {tonWalletAddress ? (
         <div className="flex flex-col items-center">
@@ -121,7 +121,7 @@ export default function Home() {
           onClick={handleWalletAction}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
         >
-          Connect TON Wallet
+          Connect Wallet
         </button>
       )}
       <BottomNavigation />
