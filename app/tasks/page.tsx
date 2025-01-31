@@ -20,14 +20,14 @@ declare global {
 }
 
 export default function TasksPage() {
-  const initialTasks: Task[] = [
+  const defaultTasks: Task[] = [
     { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
     { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
     { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
     { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
   ];
 
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(defaultTasks);
   const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -68,24 +68,26 @@ export default function TasksPage() {
     }
   }, []);
 
-  // ✅ تحميل المهام عند توفر `user.telegramId`
+  // ✅ تحميل المهام من `localStorage` بعد تحميل `user`
   useEffect(() => {
     if (user?.telegramId) {
       const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+
       if (savedTasks) {
-        console.log("📂 Loaded tasks from localStorage:", JSON.parse(savedTasks));
-        setTasks(JSON.parse(savedTasks));
+        const parsedTasks = JSON.parse(savedTasks);
+        console.log("📂 Loaded tasks from localStorage:", parsedTasks);
+        setTasks(parsedTasks.length > 0 ? parsedTasks : defaultTasks);
       } else {
         console.log("🆕 No tasks found in localStorage. Setting default tasks.");
-        setTasks(initialTasks);
-        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(initialTasks));
+        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
+        setTasks(defaultTasks);
       }
     }
-  }, [user]); // 🛠️ سيتم تشغيله فقط عند تغير `user`
+  }, [user]); // 🔥 سيتم تشغيله فقط عند تغير `user`
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على `telegramId`
   useEffect(() => {
-    if (user?.telegramId && tasks.length > 0) {
+    if (user?.telegramId) {
       console.log("💾 Saving tasks to localStorage:", tasks);
       localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
     }
