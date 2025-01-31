@@ -93,7 +93,7 @@ export default function Home() {
 
  if (!user) return (
  <div className="flex justify-center items-center w-full h-screen bg-gray-900">
-    <img src="/images/dog.gif" alt="Loading..." className="w-full h-full object-cover" />
+    <img src="/images/miz.gif" alt="Loading..." className="w-full h-full object-cover" />
   </div>
 );
 
