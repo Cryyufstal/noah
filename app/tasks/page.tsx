@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import BottomNavigation from '@/components/BottomNavigation';
-import tasks from '@/data/tasks';
+
 interface Task {
   id: number;
   title: string;
@@ -20,27 +20,16 @@ declare global {
 }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+    { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
+    { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
+  ]);
+  
   const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks(tasks);
-      }
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user?.telegramId) {
-      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
-    }
-  }, [tasks, user]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
