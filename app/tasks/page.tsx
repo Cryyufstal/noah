@@ -21,10 +21,10 @@ declare global {
 
 export default function TasksPage() {
   const initialTasks: Task[] = [
-    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-    { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
-    { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
+    { id: 11, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+    { id: 12, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+    { id: 13, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
+    { id: 14, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
   ];
 
   const [tasks, setTasks] = useState<Task[]>([]);
