@@ -20,17 +20,19 @@ declare global {
 }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([
+  const initialTasks: Task[] = [
     { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
     { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
     { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
     { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
-  ]);
-  
+  ];
+
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // ✅ تحميل بيانات المستخدم من Telegram
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
@@ -64,6 +66,26 @@ export default function TasksPage() {
       setError('This app should be opened in Telegram');
     }
   }, []);
+
+  // ✅ تحميل المهام المخزنة حسب `telegramId`
+  useEffect(() => {
+    if (user?.telegramId) {
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      } else {
+        setTasks(initialTasks);
+        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(initialTasks));
+      }
+    }
+  }, [user]);
+
+  // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على `telegramId`
+  useEffect(() => {
+    if (user?.telegramId) {
+      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
 
   const handleOpenTask = (id: number) => {
     setTasks((prevTasks) =>
@@ -147,3 +169,4 @@ export default function TasksPage() {
     </main>
   );
 }
+
