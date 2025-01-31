@@ -105,28 +105,26 @@ export default function Home() {
         {/* عنوان مرحب */}
         <div className="text-center mb-8">
           <h1 className="text-1xl font-extrabold text-blue-500">welcome {user.username}!</h1>
-           <p className="text-lg text-yellow-150 mt-3 flex items-center gap-2">
-           <span className="text-yellow-400 font-bold text-xl">{points}</span>
-          <img
-          src="/images/dig.png"
-          alt="coin"
-          className="cursor-pointer w-15 h-12 transition-transform duration-300 hover:scale-105"
-          />
-          </p>
-
-        </div>
-
-        {/* بطاقة النقاط */}
-        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
-         <p className="text-lg text-yellow-150 mt-3 flex justify-center items-center gap-2">
+<p className="text-lg text-yellow-150 mt-3 flex justify-center items-center gap-2">
   <span className="text-yellow-400 font-bold text-xl">{points}</span>
   <img
     src="/images/dig.png"
     alt="coin"
     className="cursor-pointer w-6 h-6 transition-transform duration-300 hover:scale-105"
   />
-</p>
+</p
 
+        </div>
+
+        {/* بطاقة النقاط */}
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
+          <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
+          <img
+            src="/images/dog.png"
+            alt=""
+            className="cursor-pointer mx-auto w-50 h-50 transition-transform duration-300 hover:scale-105"
+            onClick={handleImageClick}
+          />
         </div>
       </div>
 
