@@ -120,7 +120,7 @@ export default function Home() {
           <img
             src="/images/dog.png" // استبدل هذه الصورة بالصورة التي ترغب بها
             alt="Dog icon"
-            className="w-20 h-20 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
+            className="w-50 h-50 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
             onClick={handleImageClick}
           />
         </div>
