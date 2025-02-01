@@ -23,7 +23,7 @@ export default function TasksPage() {
   const defaultTasks: Task[] = [
     { id: 5, title: 'follow our channel', url: 'https://t.me/TREx_steps', points: 100, completed: false },
     { id: 6, title: 'follow us on X', url: 'https://example.com/blog', points: 100, completed: false },
-    { id: 7, title: 'Watch a Video', url: 'https://youtube.com', points: 100, completed: false },
+    { id: 7, title: '555', url: 'https://youtube.com', points: 100, completed: false },
   ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
