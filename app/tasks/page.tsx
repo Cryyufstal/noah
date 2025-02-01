@@ -21,10 +21,9 @@ declare global {
 
 export default function TasksPage() {
   const defaultTasks: Task[] = [
-    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-    { id: 3, title: 'Watch a Video', url: 'https://youtube.com', points: 20, completed: false },
-    { id: 4, title: 'Follow on Twitter', url: 'https://twitter.com', points: 10, completed: false },
+    { id: 5, title: 'follow our channel', url: 'https://t.me/TREx_steps', points: 100, completed: false },
+    { id: 6, title: 'follow us on X', url: 'https://example.com/blog', points: 100, completed: false },
+    { id: 7, title: 'Watch a Video', url: 'https://youtube.com', points: 100, completed: false },
   ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -154,7 +153,7 @@ export default function TasksPage() {
               key={task.id}
               className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
             >
-              <span className="text-lg font-semibold">{task.title}</span>
+              <span className="text-lg font-semibold">{task.title} {task.points}</span>
               {!task.completed ? (
                 <button
                   onClick={() => {
@@ -163,7 +162,7 @@ export default function TasksPage() {
                   }}
                   className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
                 >
-                  Task
+                  Start
                 </button>
               ) : (
                 <button
