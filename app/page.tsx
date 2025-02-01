@@ -110,18 +110,18 @@ export default function Home() {
         <img
           src="/images/dig.png"
           alt="coin"
-          className="cursor-pointer w-6 h-6 transition-transform duration-300 hover:scale-105"
+          className="cursor-pointer w-13 h-11 transition-transform duration-300 hover:scale-105"
         />
       </p>
     </div>
 
     {/* بطاقة النقاط */}
     <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
-      <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
+      <p className="text-xl font-medium text-gray-300 mb-4">mine REX</p>
       <img
         src="/images/dog.png"
         alt="dog"
-        className="cursor-pointer mx-auto w-32 h-32 transition-transform duration-300 hover:scale-105"
+        className="cursor-pointer mx-auto w-36 h-32 transition-transform duration-300 hover:scale-105"
         onClick={handleImageClick}
       />
     </div>
