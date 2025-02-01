@@ -19,7 +19,7 @@ export default function RootLayout({
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
 
         {/* توفير إمكانية الاتصال بمحفظة TON */}
-        <TonConnectUIProvider manifestUrl="https://green-chemical-chicken-626.mypinata.cloud/ipfs/bafkreic2zunpzcuuzgfvljphetrojd2i6yan5xukqcr3ztvs225lcol6qq">
+        <TonConnectUIProvider manifestUrl="https://green-chemical-chicken-626.mypinata.cloud/ipfs/bafkreidl6rycshbddwkaffiu5s67upq5sbqxterbtdl75tir3qbmf76y4q">
           {children}
         </TonConnectUIProvider>
       </body>
