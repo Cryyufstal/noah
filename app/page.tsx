@@ -121,7 +121,7 @@ export default function Home() {
       <img
         src="/images/dog.png"
         alt="dog"
-        className="cursor-pointer mx-auto w-36 h-32 transition-transform duration-300 hover:scale-105"
+        className="cursor-pointer mx-auto w-50 h-50 transition-transform duration-300 hover:scale-105"
         onClick={handleImageClick}
       />
     </div>
