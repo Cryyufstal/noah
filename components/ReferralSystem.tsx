@@ -61,9 +61,6 @@ const ReferralSystem: React.FC<ReferralSystemProps> = ({ initData, userId, start
   const handleCopyLink = () => {
     const inviteLink = `${INVITE_URL}?startapp=${userId}`
     navigator.clipboard.writeText(inviteLink)
-     setShowMessage(true);
-     setTimeout(() => setShowMessage(false), 1000);
-  }
 
   return (
     <div className="w-full max-w-md">
