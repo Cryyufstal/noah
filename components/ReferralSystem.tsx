@@ -61,7 +61,8 @@ const ReferralSystem: React.FC<ReferralSystemProps> = ({ initData, userId, start
   const handleCopyLink = () => {
     const inviteLink = `${INVITE_URL}?startapp=${userId}`
     navigator.clipboard.writeText(inviteLink)
-    alert('Invite link copied to clipboard!')
+     setShowMessage(true);
+     setTimeout(() => setShowMessage(false), 1000);
   }
 
   return (
