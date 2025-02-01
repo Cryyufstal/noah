@@ -2,7 +2,7 @@
 import BottomNavigation from '@/components/BottomNavigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
-import { Address, toNano } from "@ton/core";
+import { Address } from "@ton/core";
 
 export default function Home() {
   const [tonConnectUI] = useTonConnectUI();
@@ -54,30 +54,6 @@ export default function Home() {
     }
   };
 
-  const sendTon = async () => {
-    if (!tonConnectUI.connected || !tonWalletAddress) return;
-
-    try {
-      const recipient = "EQD55JFjMC5PYtpXwJ5wMhWa2n7R6quJIJBeBR2Zj7Wpw2z4";
-      const amount = toNano(0.2); // تحويل 0.2 TON إلى nanoTON
-
-      await tonConnectUI.sendTransaction({
-        messages: [
-          {
-            address: recipient,
-            amount: amount.toString(),
-          },
-        ],
-        validUntil: Math.floor(Date.now() / 1000) + 600, // صلاحية 10 دقائق
-      });
-
-      alert("Transaction sent successfully!");
-    } catch (error) {
-      console.error("Transaction failed:", error);
-      alert("Transaction failed. Please try again.");
-    }
-  };
-
   const formatAddress = (address: string) => {
     const tempAddress = Address.parse(address).toString();
     return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
@@ -98,6 +74,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
         Connect TON wallet
       </h1>
+      
       {tonWalletAddress ? (
         <div className="flex flex-col items-center">
           <p className="mb-4 text-lg bg-gray-700 py-2 px-4 rounded-lg shadow-md">
@@ -105,27 +82,37 @@ export default function Home() {
           </p>
           <button
             onClick={handleWalletAction}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 mb-4"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105 mb-4"
           >
             Disconnect Wallet
-          </button>
-          <button
-            onClick={sendTon}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            Send 0.2 TON
           </button>
         </div>
       ) : (
         <button
           onClick={handleWalletAction}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
         >
           Connect Wallet
         </button>
       )}
+
+      {/* قائمة المهام */}
+      <div className="mt-8 w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold mb-4 text-center">🚀 المهام المطلوبة:</h2>
+        <ul className="space-y-3 text-lg">
+          <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
+            1️⃣ invite 5 friends
+          </li>
+          <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
+            2️⃣ collect +30000 point
+          </li>
+          <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
+            3️⃣ connect wallet
+          </li>
+        </ul>
+      </div>
+
       <BottomNavigation />
     </main>
   );
 }
-
