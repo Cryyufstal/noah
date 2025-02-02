@@ -103,6 +103,23 @@ export default function TasksPage() {
       )
     );
   };
+  useEffect(() => {
+    const fetchTotalReferrals = async () => {
+      if (userId) {
+        try {
+          const response = await fetch(`/api/referrals?userId=${userId}`);
+          const data = await response.json();
+
+          if (data.error) {
+            console.error(data.error);
+          } else {
+            setTotalReferrals(data.total_referrals || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching total referrals:', error);
+        }
+      }
+    };
 
 const handleCompleteTask = async (id: number, points: number) => {
   const newPoints = userPoints + points;
