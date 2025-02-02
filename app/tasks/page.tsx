@@ -76,7 +76,7 @@ export default function TasksPage() {
       if (savedTasks) {
         const parsedTasks = JSON.parse(savedTasks);
         console.log("📂 Loaded tasks from localStorage:", parsedTasks);
-        setTasks(parsedTasks.length > 0 ? parsedTasks : defaultTasks);
+        setTasks(parsedTasks.length > 1 ? parsedTasks : defaultTasks);
       } else {
         console.log("🆕 No tasks found in localStorage. Setting default tasks.");
         localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
