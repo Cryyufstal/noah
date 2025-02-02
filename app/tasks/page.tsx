@@ -104,6 +104,8 @@ export default function TasksPage() {
     );
   };
 
+  const [totalReferrals, setTotalReferrals] = useState<number>(0);
+
   useEffect(() => {
     const fetchTotalReferrals = async () => {
       if (userId) {
@@ -123,7 +125,7 @@ export default function TasksPage() {
     };
 
     fetchTotalReferrals();
-  }, [userId]); // سيتم إعادة الجلب إذا تغير `userId`
+  }, [userId]);
 
 const handleCompleteTask = async (id: number, points: number) => {
   const newPoints = userPoints + points;
