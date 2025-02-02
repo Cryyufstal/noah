@@ -20,11 +20,10 @@ declare global {
 }
 
 export default function TasksPage() {
-  const defaultTasks: Task[] = [
-    { id: 5, title: 'follow our channel', url: 'https://t.me/TREx_steps', points: 100, completed: false },
-    { id: 6, title: 'follow us on X', url: 'https://example.com/blog', points: 100, completed: false },
-    { id: 7, title: '555', url: 'https://youtube.com', points: 100, completed: false },
-  ];
+  const defaultTasks = [
+  { id: 1, title: "Complete this task", completed: false },
+  { id: 2, title: "This task is permanent", completed: false, permanent: true },
+];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
   const [userPoints, setUserPoints] = useState(0);
@@ -68,23 +67,22 @@ export default function TasksPage() {
   }, []);
 
   // ✅ تحميل المهام من localStorage بعد تحميل user
- useEffect(() => {
-  const storedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-  if (storedTasks) {
-    const parsedTasks = JSON.parse(storedTasks);
-    if (parsedTasks.some((task) => !task.completed)) {
-      setTasks(parsedTasks);
-    } else {
-      console.log("✅ All tasks completed. No changes applied.");
-      setTasks(parsedTasks);
+  useEffect(() => {
+    if (user?.telegramId) {
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+
+      if (savedTasks) {
+        const parsedTasks = JSON.parse(savedTasks);
+        console.log("📂 Loaded tasks from localStorage:", parsedTasks);
+        setTasks(parsedTasks.length > 0 ? parsedTasks : defaultTasks);
+      } else {
+        console.log("🆕 No tasks found in localStorage. Setting default tasks.");
+        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
+
+        setTasks(defaultTasks);
+      }
     }
-  } else {
-    console.log("🆕 No tasks found in localStorage. Setting default tasks.");
-    localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
-    setTasks(defaultTasks);
-  }
-}, [user?.telegramId]);
- // 🔥 سيتم تشغيله فقط عند تغير user
+  }, [user]); // 🔥 سيتم تشغيله فقط عند تغير user
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على telegramId
   useEffect(() => {
