@@ -51,11 +51,14 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-6 text-white">
       <div className="bg-gray-800 shadow-lg rounded-2xl w-full max-w-3xl p-6 text-center">
-        <h1 className="text-4xl font-bold mb-6 text-blue-400">
-          Telegram Referral
-        </h1>
+        <img
+            src="/images/invit.png" // استبدل هذه الصورة بالصورة التي ترغب بها
+            alt="invite icon"
+            className="w-30 h-30 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
+            onClick={handleImageClick}
+          />
         <p className="text-gray-300 text-lg mb-8">
-          Welcome to the referral system. Connect with your audience and share referral links seamlessly!
+          Welcome to the referral system. earn more <dev className="text-yellow-300 text-lg mb-8">TREx</dev> points 
         </p>
 
         {/* المكون الخاص بنظام الإحالة */}
