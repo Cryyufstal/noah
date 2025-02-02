@@ -87,11 +87,12 @@ export default function TasksPage() {
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على telegramId
   useEffect(() => {
-    if (user?.telegramId) {
-      console.log("💾 Saving tasks to localStorage:", tasks);
-      localStorage.setItem(tasks_${user.telegramId}, JSON.stringify(tasks));
-    }
-  }, [tasks, user]);
+  if (user?.telegramId) {
+    console.log("💾 Saving tasks to localStorage:", tasks);
+    localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
+  }
+}, [tasks, user]);
+
 
   const handleOpenTask = (id: number) => {
     setTasks((prevTasks) =>
