@@ -20,9 +20,9 @@ declare global {
 }
 
 export default function TasksPage() {
-  const defaultTasks = [
-  { id: 1, title: "Complete this task", completed: false },
-  { id: 2, title: "This task is permanent", completed: false, permanent: true },
+  const defaultTasks: Task[] = [
+  { id: 1, title: "Complete this task", completed: false, url: "", points: 0 },
+  { id: 2, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
 ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
