@@ -24,7 +24,6 @@ export default function TasksPage() {
   const defaultTasks: Task[] = [
   { id: 1, title: "Complete this task", completed: false, url: "", points: 0 },
   { id: 2, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
-  { id: hk, title: "Complete this task", completed: false, url: "", points: 0 },
   { id: 0, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
 ];
 
@@ -162,7 +161,7 @@ const handleCompleteTask = async (id: number, points: number) => {
       </div>
 
       <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
-        {tasks.length > 0 ? (
+        {tasks.length > -1 ? (
           tasks.map((task) => (
             <li
               key={task.id}
