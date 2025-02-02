@@ -103,6 +103,7 @@ export default function TasksPage() {
       )
     );
   };
+
   useEffect(() => {
     const fetchTotalReferrals = async () => {
       if (userId) {
@@ -116,10 +117,13 @@ export default function TasksPage() {
             setTotalReferrals(data.total_referrals || 0);
           }
         } catch (error) {
-          console.error('Error fetching total referrals:', error);
+          console.error("Error fetching total referrals:", error);
         }
       }
     };
+
+    fetchTotalReferrals();
+  }, [userId]); // سيتم إعادة الجلب إذا تغير `userId`
 
 const handleCompleteTask = async (id: number, points: number) => {
   const newPoints = userPoints + points;
