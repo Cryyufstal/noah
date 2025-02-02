@@ -55,7 +55,6 @@ export default function Home() {
             src="/images/invit.png" // استبدل هذه الصورة بالصورة التي ترغب بها
             alt="invite icon"
             className="w-30 h-30 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
-            onClick={handleImageClick}
           />
         <p className="text-gray-300 text-lg mb-8">
           Welcome to the referral system. earn more <dev className="text-yellow-300 text-lg mb-8">TREx</dev> points 
