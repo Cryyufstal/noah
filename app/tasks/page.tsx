@@ -22,10 +22,11 @@ declare global {
 
 export default function TasksPage() {
   const defaultTasks: Task[] = [
-  { id: 1, title: "Complete this task", completed: false, url: "", points: 0 },
-  { id: 2, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
-  { id: 0, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
-  { id: 7, title: "whait for update...", completed:false , url: "", points: 0 },
+  { id: 1, title: "Complete this task", completed: false, url: "", points: 100 },
+  { id: 2, title: "invite 3 friends", completed: false, url: "@/app/game", points: 2000 },
+  { id: 3, title: "invite 5 friends", completed: false, url: "@/app/game", points: 10000 },
+  { id: 4, title: "invite 10 friends", completed: false, url: "@/app/game", points: 20000 },
+  { id: 7, title: "soon...", completed:false , url: "", points: 1000 },
 ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -163,39 +164,49 @@ const handleCompleteTask = async (id: number, points: number) => {
       <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
   {tasks.length > -1 ? (
     tasks.map((task) => (
-      <li
-        key={task.id}
-        className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
-      >
-        <span className="text-lg font-semibold">{task.title} - {task.points}</span>
-        {!task.completed ? (
-          task.id === 7 ? (
-            <button
-              disabled
-              className="bg-gray-500 text-white py-1 px-4 rounded cursor-not-allowed"
-            >
-              Not Available
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                window.open(task.url, '_blank');
-                handleOpenTask(task.id);
-              }}
-              className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
-            >
-              Start
-            </button>
-          )
-        ) : (
-          <button
-            onClick={() => handleCompleteTask(task.id, task.points ?? 0)}
-            className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
-          >
-            Check
-          </button>
-        )}
-      </li>
+      {!task.completed ? (
+  task.id === 7 ? (
+    <button
+      disabled
+      className="bg-gray-500 text-white py-1 px-4 rounded cursor-not-allowed"
+    >
+      Not Available
+    </button>
+  ) : (
+    <button
+      onClick={() => {
+        window.open(task.url, '_blank');
+        handleOpenTask(task.id);
+      }}
+      className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
+    >
+      Start
+    </button>
+  )
+) : (
+  <button
+    onClick={() => handleCompleteTask(task.id, task.points ?? 0)}
+    disabled={task.id === 2 && totalReferrals <= 3} // 🔥 هنا نضيف الشرط
+    className={`py-1 px-4 rounded transition-all text-white ${
+      task.id === 6 && totalReferrals <= 3
+        ? "bg-gray-500 cursor-not-allowed"
+        : "bg-green-500 hover:bg-green-600"
+      disabled={task.id === 3 && totalReferrals <= 5} // 🔥 هنا نضيف الشرط
+    className={`py-1 px-4 rounded transition-all text-white ${
+      task.id === 6 && totalReferrals <= 5
+        ? "bg-gray-500 cursor-not-allowed"
+        : "bg-green-500 hover:bg-green-600"
+          disabled={task.id === 4 && totalReferrals <= 10} // 🔥 هنا نضيف الشرط
+    className={`py-1 px-4 rounded transition-all text-white ${
+      task.id === 6 && totalReferrals <= 10
+        ? "bg-gray-500 cursor-not-allowed"
+        : "bg-green-500 hover:bg-green-600"
+    }`}
+  >
+    Check
+  </button>
+)}
+
     ))
   ) : (
     <li className="text-center text-gray-400 p-4">No tasks available.</li>
