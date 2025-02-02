@@ -54,7 +54,7 @@ export default function Home() {
         <img
             src="/images/invit.png" // استبدل هذه الصورة بالصورة التي ترغب بها
             alt="invite icon"
-            className="w-23 h-23 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
+            className="w-20 h-20 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
           />
         <p className="text-gray-300 text-lg mb-8">
           invite frends . earn more TREx points
