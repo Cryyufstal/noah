@@ -57,7 +57,7 @@ export default function Home() {
             className="w-30 h-30 mx-auto mb-4 cursor-pointer transition-transform transform hover:scale-105"
           />
         <p className="text-gray-300 text-lg mb-8">
-          Welcome to the referral system. earn more <dev className="text-yellow-300 text-lg mb-8">TREx</dev> points 
+          Welcome to the referral system. earn more <p className="text-yellow-300 text-lg mb-8">TREx</p> points 
         </p>
 
         {/* المكون الخاص بنظام الإحالة */}
