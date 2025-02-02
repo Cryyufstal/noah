@@ -154,64 +154,74 @@ const handleCompleteTask = async (id: number, points: number) => {
 )
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-6">Tasks</h1>
+  <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
+    <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
-      <div className="mb-4 text-lg font-medium">
-        Your Points: <span className="text-green-400">{userPoints}</span>
-      </div>
+    <div className="mb-4 text-lg font-medium">
+      Your Points: <span className="text-green-400">{userPoints}</span>
+    </div>
 
-      <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
-  {tasks.length > -1 ? (
-    tasks.map((task) => (
-      {!task.completed ? (
-  task.id === 7 ? (
-    <button
-      disabled
-      className="bg-gray-500 text-white py-1 px-4 rounded cursor-not-allowed"
-    >
-      Not Available
-    </button>
-  ) : (
-    <button
-      onClick={() => {
-        window.open(task.url, '_blank');
-        handleOpenTask(task.id);
-      }}
-      className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
-    >
-      Start
-    </button>
-  )
-) : (
-  <button
-    onClick={() => handleCompleteTask(task.id, task.points ?? 0)}
-    disabled={task.id === 2 && totalReferrals <= 3} // 🔥 هنا نضيف الشرط
-    className={`py-1 px-4 rounded transition-all text-white ${
-      task.id === 6 && totalReferrals <= 3
-        ? "bg-gray-500 cursor-not-allowed"
-        : "bg-green-500 hover:bg-green-600"
-      disabled={task.id === 3 && totalReferrals <= 5} // 🔥 هنا نضيف الشرط
-    className={`py-1 px-4 rounded transition-all text-white ${
-      task.id === 6 && totalReferrals <= 5
-        ? "bg-gray-500 cursor-not-allowed"
-        : "bg-green-500 hover:bg-green-600"
-          disabled={task.id === 4 && totalReferrals <= 10} // 🔥 هنا نضيف الشرط
-    className={`py-1 px-4 rounded transition-all text-white ${
-      task.id === 6 && totalReferrals <= 10
-        ? "bg-gray-500 cursor-not-allowed"
-        : "bg-green-500 hover:bg-green-600"
-    }`}
-  >
-    Check
-  </button>
-)}
+    <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
+      {tasks.length > 0 ? (
+        tasks.map((task) => (
+          <li
+            key={task.id}
+            className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
+          >
+            <span className="text-lg font-semibold">
+              {task.title} - {task.points}
+            </span>
 
-    ))
-  ) : (
-    <li className="text-center text-gray-400 p-4">No tasks available.</li>
-  )}
-</ul>
+            {!task.completed ? (
+              task.id === 7 ? (
+                <button
+                  disabled
+                  className="bg-gray-500 text-white py-1 px-4 rounded cursor-not-allowed"
+                >
+                  Not Available
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    window.open(task.url, "_blank");
+                    handleOpenTask(task.id);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
+                >
+                  Start
+                </button>
+              )
+            ) : (
+              <button
+                onClick={() => handleCompleteTask(task.id, task.points ?? 0)}
+                disabled={
+                  (task.id === 2 && totalReferrals <= 3) ||
+                  (task.id === 3 && totalReferrals <= 5) ||
+                  (task.id === 4 && totalReferrals <= 10) ||
+                  task.id === 7
+                }
+                className={`py-1 px-4 rounded transition-all text-white ${
+                  (task.id === 2 && totalReferrals <= 3) ||
+                  (task.id === 3 && totalReferrals <= 5) ||
+                  (task.id === 4 && totalReferrals <= 10) ||
+                  task.id === 7
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                Check
+              </button>
+            )}
+          </li>
+        ))
+      ) : (
+        <li className="text-center text-gray-400 p-4">No tasks available.</li>
+      )}
+    </ul>
+
+    <BottomNavigation />
+  </main>
+);
 
 
       <BottomNavigation />
