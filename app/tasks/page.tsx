@@ -70,7 +70,7 @@ export default function TasksPage() {
   // ✅ تحميل المهام من localStorage بعد تحميل user
   useEffect(() => {
     if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(tasks_${user.telegramId});
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
 
       if (savedTasks) {
         const parsedTasks = JSON.parse(savedTasks);
