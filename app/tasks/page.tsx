@@ -25,7 +25,7 @@ export default function TasksPage() {
   { id: 1, title: "Complete this task", completed: false, url: "", points: 0 },
   { id: 2, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
   { id: 0, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
-  { id: 7, title: "whait for update...", completed: , url: "", points: 0 },
+  { id: 7, title: "whait for update...", completed:false , url: "", points: 0 },
 ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
