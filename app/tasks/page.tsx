@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import BottomNavigation from '@/components/BottomNavigation';
 
-interface Task {
+type Task = {
   id: number;
   title: string;
-  url: string;
-  points: number;
   completed: boolean;
-}
+  permanent?: boolean;
+  url?: string; // جعل الخاصية اختيارية
+  points?: number; // جعل الخاصية اختيارية
+};
 
 declare global {
   interface Window {
