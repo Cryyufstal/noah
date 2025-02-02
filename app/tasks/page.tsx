@@ -222,3 +222,4 @@ const handleCompleteTask = async (id: number, points: number) => {
     <BottomNavigation />
   </main>
 );
+  } 
