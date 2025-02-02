@@ -68,22 +68,23 @@ export default function TasksPage() {
   }, []);
 
   // ✅ تحميل المهام من localStorage بعد تحميل user
-  useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
-
-      if (savedTasks) {
-        const parsedTasks = JSON.parse(savedTasks);
-        console.log("📂 Loaded tasks from localStorage:", parsedTasks);
-        setTasks(parsedTasks.length > 0 ? parsedTasks : defaultTasks);
-      } else {
-        console.log("🆕 No tasks found in localStorage. Setting default tasks.");
-        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
-
-        setTasks(defaultTasks);
-      }
+ useEffect(() => {
+  const storedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+  if (storedTasks) {
+    const parsedTasks = JSON.parse(storedTasks);
+    if (parsedTasks.some((task) => !task.completed)) {
+      setTasks(parsedTasks);
+    } else {
+      console.log("✅ All tasks completed. No changes applied.");
+      setTasks(parsedTasks);
     }
-  }, [user]); // 🔥 سيتم تشغيله فقط عند تغير user
+  } else {
+    console.log("🆕 No tasks found in localStorage. Setting default tasks.");
+    localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
+    setTasks(defaultTasks);
+  }
+}, [user?.telegramId]);
+ // 🔥 سيتم تشغيله فقط عند تغير user
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على telegramId
   useEffect(() => {
