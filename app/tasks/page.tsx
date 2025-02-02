@@ -25,6 +25,7 @@ export default function TasksPage() {
   { id: 1, title: "Complete this task", completed: false, url: "", points: 0 },
   { id: 2, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
   { id: 0, title: "This task is permanent", completed: false, permanent: true, url: "", points: 0 },
+  { id: 7, title: "Complete this task", completed: true, url: "", points: 0 },
 ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -70,21 +71,20 @@ export default function TasksPage() {
 
   // ✅ تحميل المهام من localStorage بعد تحميل user
   useEffect(() => {
-    if (user?.telegramId) {
-      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+  if (user?.telegramId) {
+    const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
 
-      if (savedTasks) {
-        const parsedTasks = JSON.parse(savedTasks);
-        console.log("📂 Loaded tasks from localStorage:", parsedTasks);
-        setTasks(parsedTasks.length > 1 ? parsedTasks : defaultTasks);
-      } else {
-        console.log("🆕 No tasks found in localStorage. Setting default tasks.");
-        localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(defaultTasks));
-
-        setTasks(defaultTasks);
-      }
+    if (savedTasks) {
+      const parsedTasks = JSON.parse(savedTasks);
+      console.log("📂 Loaded tasks from localStorage:", parsedTasks);
+      setTasks(parsedTasks.length > 0 ? parsedTasks : defaultTasks);
+    } else {
+      console.log("🆕 No tasks found in localStorage. Doing nothing.");
+      // لا تفعل أي شيء هنا، مجرد طباعة رسالة في وحدة التحكم
     }
-  }, [user]); // 🔥 سيتم تشغيله فقط عند تغير user
+  }
+}, [user?.telegramId]);
+ // 🔥 سيتم تشغيله فقط عند تغير user
 
   // ✅ حفظ المهام عند تغييرها لكل مستخدم بناءً على telegramId
   useEffect(() => {
