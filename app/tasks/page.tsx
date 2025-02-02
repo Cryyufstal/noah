@@ -179,7 +179,7 @@ const handleCompleteTask = async (id: number, points: number) => {
                 </button>
               ) : (
                 <button
-                  onClick={() => handleCompleteTask(task.id, task.points)}
+                  onClick={() => handleCompleteTask(task.id, task.points ?? 0)}
                   className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
                 >
                   Check
