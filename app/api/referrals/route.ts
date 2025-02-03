@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       await prisma.user.update({
         where: { telegramId: referrerIdNumber },
         data: {
-          points: referrer.points + 500, // إضافة النقاط للمحيل
+          points: referrer.points + 5000, // إضافة النقاط للمحيل
           total_referral: (referrer.total_referral || 0) + 1, // زيادة عدد الإحالات بمقدار 1
         },
       });
