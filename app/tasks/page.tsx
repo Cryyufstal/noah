@@ -106,6 +106,7 @@ export default function TasksPage() {
 
   const [totalReferrals, setTotalReferrals] = useState<number>(0);
 
+
   useEffect(() => {
     const fetchTotalReferrals = async () => {
       if (userId) {
@@ -126,6 +127,7 @@ export default function TasksPage() {
 
     fetchTotalReferrals();
   }, [userId]);
+
 
 const handleCompleteTask = async (id: number, points: number) => {
   const newPoints = userPoints + points;
