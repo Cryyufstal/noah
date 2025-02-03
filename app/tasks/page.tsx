@@ -24,9 +24,9 @@ declare global {
 export default function TasksPage() {
   const defaultTasks: Task[] = [
   { id: 1, title: "follow community", completed: false, url: "https://t.me/TREx_steps", points: 1000 },
-  { id: 2, title: "invite 3 friends", completed: false, href: "/game", points: 20000 },
-  { id: 3, title: "invite 5 friends", completed: false, href: "/game", points: 100000 },
-  { id: 4, title: "invite 10 friends", completed: false, href: "/game", points: 200000 },
+  { id: 2, title: "invite 5 friends", completed: false, href: "/game", points: 20000 },
+  { id: 3, title: "invite 10 friends", completed: false, href: "/game", points: 100000 },
+  { id: 4, title: "invite 100 friends", completed: false, href: "/game", points: 1000000 },
   { id: 5, title: "follow not community", completed: false, url: "https://t.me/notcoin", points: 1000 },
   { id: 6, title: "follow paws community", completed: false, url: "https://paws.community/app", points: 1000 },
   { id: 8, title: "play NORDOM", completed: false, url: "https://t.me/nordom_gates_bot/open?startapp=Gb1n3s", points: 1000 },
