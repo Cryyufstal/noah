@@ -107,26 +107,27 @@ export default function TasksPage() {
   const [totalReferrals, setTotalReferrals] = useState<number>(0);
 
 
-  useEffect(() => {
-    const fetchTotalReferrals = async () => {
-      if (userId) {
-        try {
-          const response = await fetch(`/api/referrals?userId=${userId}`);
-          const data = await response.json();
+useEffect(() => {
+  const fetchTotalReferrals = async () => {
+    if (user?.telegramId) {
+      try {
+        const response = await fetch(`/api/referrals?userId=${user.telegramId}`);
+        const data = await response.json();
 
-          if (data.error) {
-            console.error(data.error);
-          } else {
-            setTotalReferrals(data.total_referrals || 0);
-          }
-        } catch (error) {
-          console.error("Error fetching total referrals:", error);
+        if (data.error) {
+          console.error(data.error);
+        } else {
+          setTotalReferrals(data.total_referrals || 0);
         }
+      } catch (error) {
+        console.error("Error fetching total referrals:", error);
       }
-    };
+    }
+  };
 
-    fetchTotalReferrals();
-  }, [userId]);
+  fetchTotalReferrals();
+}, [user?.telegramId]); // ✅ الآن نستخدم telegramId كاعتماد
+
 
 
 const handleCompleteTask = async (id: number, points: number) => {
