@@ -8,6 +8,7 @@ type Task = {
   title: string;
   completed: boolean;
   permanent?: boolean;
+  href?: string;
   url?: string; // جعل الخاصية اختيارية
   points?: number; // جعل الخاصية اختيارية
 };
@@ -22,11 +23,11 @@ declare global {
 
 export default function TasksPage() {
   const defaultTasks: Task[] = [
-  { id: 1, title: "Complete this task", completed: false, url: "", points: 100 },
-  { id: 2, title: "invite 3 friends", completed: false, url: "@/app/game", points: 2000 },
-  { id: 3, title: "invite 5 friends", completed: false, url: "@/app/game", points: 10000 },
-  { id: 4, title: "invite 10 friends", completed: false, url: "@/app/game", points: 20000 },
-  { id: 7, title: "soon...", completed:false , url: "", points: 1000 },
+  { id: 1, title: "follow community", completed: false, url: "https://t.me/TREx_steps", points: 100 },
+  { id: 2, title: "invite 3 friends", completed: false, href: "/game", points: 2000 },
+  { id: 3, title: "invite 5 friends", completed: false, href: "/game", points: 10000 },
+  { id: 4, title: "invite 10 friends", completed: false, href: "/game", points: 20000 },
+  { id: 7, title: "soon...", completed:false , url: "", points: 100000 },
 ];
 
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -195,8 +196,9 @@ const handleCompleteTask = async (id: number, points: number) => {
             className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
           >
             <span className="text-lg font-semibold">
-              {task.title} - {task.points}
+                {task.title} - <span className="text-yellow-400">{task.points}</span> TREx
             </span>
+
 
             {!task.completed ? (
               task.id === 7 ? (
