@@ -98,7 +98,7 @@ export default function Home() {
 
       {/* قائمة المهام */}
       <div className="mt-8 w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4 text-center"> Hints :</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Hints</h2>
         <ul className="space-y-3 text-lg">
           <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
             1️⃣ Invite friends 
@@ -107,7 +107,7 @@ export default function Home() {
             2️⃣ collect point
           </li>
           <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
-            3️ connect wallet
+            3️⃣ connect wallet
           </li>
           <li className="bg-gray-700 px-4 py-2 rounded-lg shadow">
             4️⃣ wait...
