@@ -103,19 +103,19 @@ export default function Home() {
       <div className="p-6 flex flex-col items-center">
         {/* واجهة المستخدم */}
         <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-gray-300">PAWS</h1>
+          <h1 className="text-xl font-bold text-gray-300">TREx</h1>
           <p className="text-lg text-gray-400">
-            mini uygulama
+             {user.username}
           </p>
         </div>
 
         {/* صندوق النقاط */}
         <div className="bg-black rounded-xl p-8 shadow-lg text-center w-full max-w-sm">
           <h2 className="text-4xl font-extrabold text-white mb-4">
-            {points.toLocaleString()} <span className="text-yellow-400">PAWS</span>
+            {points.toLocaleString()} <span className="text-yellow-400">TREx</span>
           </h2>
           <p className="text-sm text-gray-400 mb-4">
-            CHAMP <span className="text-yellow-500">🏆</span> RANK
+            CHAMP <span className="text-yellow-500">🏆</span> 
           </p>
           <img
             src="/images/dog.png" // استبدل هذه الصورة بالصورة التي ترغب بها
