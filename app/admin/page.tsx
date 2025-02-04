@@ -26,9 +26,7 @@ export default function AdminDashboard() {
         if (data.error) {
           setError(data.error);
         } else {
-          // ترتيب المستخدمين حسب النقاط تنازلياً
-          const sortedUsers = (data.users || []).sort((a: any, b: any) => b.points - a.points);
-          setUsers(sortedUsers);
+          setUsers(data.users || []);
         }
       })
       .catch((err) => {
@@ -81,4 +79,4 @@ export default function AdminDashboard() {
       {/* شريط سفلي */}
     </div>
   );
-}
+      }
